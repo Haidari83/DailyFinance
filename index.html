@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت مالی روزانه - نسخه حرفه‌ای</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="developer-info">
+        <button class="developer-toggle" onclick="toggleDeveloperInfo()">
+            <i class="fas fa-code"></i> اطلاعات توسعه‌دهنده
+        </button>
+        <div class="developer-details" id="developerDetails">
+            <p><i class="fas fa-user"></i> نام: علی احمد حیدری</p>
+            <p><i class="fas fa-envelope"></i> ایمیل: aliahmad20583@gmail.com</p>
+            <p><i class="fab fa-telegram"></i> تلگرام: @Alisanhaidari</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="header-right">
+                    <div class="logo">
+                        <i class="fas fa-wallet"></i> 
+                        <span>مدیریت مالی روزانه</span>
+                    </div>
+                    <div class="theme-switch-wrapper">
+                        <i class="fas fa-sun"></i>
+                        <label class="theme-switch">
+                            <input type="checkbox" id="theme-toggle">
+                            <span class="slider"></span>
+                        </label>
+                        <i class="fas fa-moon"></i>
+                    </div>
+                </div>
+                <div class="totals">
+                    <div class="total-item total-expenses">
+                        <h3><i class="fas fa-money-bill-wave"></i> مجموع هزینه‌ها</h3>
+                        <p id="totalExpenses">۰ تومان</p>
+                    </div>
+                    <div class="total-item total-incomes">
+                        <h3><i class="fas fa-coins"></i> مجموع درآمدها</h3>
+                        <p id="totalIncomes">۰ تومان</p>
+                    </div>
+                    <div class="total-item total-balance">
+                        <h3><i class="fas fa-piggy-bank"></i> موجودی باقیمانده</h3>
+                        <p id="totalBalance">۰ تومان</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="openForm('expense')">
+                <i class="fas fa-minus-circle"></i> افزودن هزینه جدید
+            </button>
+            <button class="btn btn-success" onclick="openForm('income')">
+                <i class="fas fa-plus-circle"></i> افزودن درآمد جدید
+            </button>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="all">همه تراکنش‌ها</div>
+            <div class="tab" data-tab="incomes">درآمدها</div>
+            <div class="tab" data-tab="expenses">هزینه‌ها</div>
+        </div>
+        
+        <div class="transactions-container" id="transactionsContainer">
+            <!-- محتوای تراکنش‌ها اینجا نمایش داده می‌شود -->
+        </div>
+    </div>
+    
+    <!-- فرم افزودن تراکنش -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">افزودن تراکنش جدید</h3>
+                <button class="close-modal" onclick="closeForm()">&times;</button>
+            </div>
+            <form id="addForm">
+                <div class="type-toggle">
+                    <button type="button" class="active" id="expenseType">هزینه</button>
+                    <button type="button" id="incomeType">درآمد</button>
+                </div>
+                <div class="form-group">
+                    <label for="transactionName">عنوان تراکنش</label>
+                    <input type="text" id="transactionName" class="transaction-name" required placeholder="مثال: خرید لوازم خانگی">
+                </div>
+                <div class="form-group">
+                    <label for="transactionAmount">مبلغ (تومان)</label>
+                    <input type="number" id="transactionAmount" class="transaction-amount" min="0" required placeholder="مثال: 250000">
+                </div>
+                <div class="form-group">
+                    <label for="transactionDate">تاریخ</label>
+                    <input type="date" id="transactionDate" class="transaction-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="transactionCategory">دسته‌بندی</label>
+                    <select id="transactionCategory" class="transaction-category">
+                        <option value="عمومی">عمومی</option>
+                        <option value="خوراک">خوراک</option>
+                        <option value="حمل و نقل">حمل و نقل</option>
+                        <option value="مسکن">مسکن</option>
+                        <option value="تفریح">تفریح</option>
+                        <option value="سلامتی">سلامتی</option>
+                        <option value="آموزش">آموزش</option>
+                        <option value="درآمد">درآمد</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionDescription">توضیحات (اختیاری)</label>
+                    <textarea id="transactionDescription" class="transaction-description" rows="3" placeholder="توضیحات بیشتر در مورد این تراکنش..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="submitButton">
+                    <span id="submitText">ثبت تراکنش</span>
+                    <div class="loading" id="submitLoading" style="display: none;"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- مودال ویرایش -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">ویرایش تراکنش</h3>
+                <button class="close-modal" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editForm">
+                <div class="type-toggle">
+                    <button type="button" id="editExpenseType">هزینه</button>
+                    <button type="button" id="editIncomeType">درآمد</button>
+                </div>
+                <div class="form-group">
+                    <label for="editTransactionName">عنوان تراکنش</label>
+                    <input type="text" id="editTransactionName" class="edit-transaction-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTransactionAmount">مبلغ (تومان)</label>
+                    <input type="number" id="editTransactionAmount" class="edit-transaction-amount" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTransactionDate">تاریخ</label>
+                    <input type="date" id="editTransactionDate" class="edit-transaction-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTransactionCategory">دسته‌بندی</label>
+                    <select id="editTransactionCategory" class="edit-transaction-category">
+                        <option value="عمومی">عمومی</option>
+                        <option value="خوراک">خوراک</option>
+                        <option value="حمل و نقل">حمل و نقل</option>
+                        <option value="مسکن">مسکن</option>
+                        <option value="تفریح">تفریح</option>
+                        <option value="سلامتی">سلامتی</option>
+                        <option value="آموزش">آموزش</option>
+                        <option value="درآمد">درآمد</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editTransactionDescription">توضیحات (اختیاری)</label>
+                    <textarea id="editTransactionDescription" class="edit-transaction-description" rows="3" placeholder="توضیحات بیشتر..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <span>ذخیره تغییرات</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- مودال حذف -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">حذف تراکنش</h3>
+                <button class="close-modal" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div style="text-align: center; padding: 40px 20px;">
+                <i class="fas fa-exclamation-circle" style="font-size: 70px; color: var(--danger); margin-bottom: 25px;"></i>
+                <p style="margin: 20px 0; font-size: 1.3rem;">آیا از حذف این آیتم اطمینان دارید؟</p>
+                <p id="deleteItemName" style="font-weight: bold; color: var(--danger); font-size: 1.4rem; background: var(--danger-light); padding: 15px; border-radius: 12px;"></p>
+            </div>
+            <div style="display: flex; gap: 15px; padding: 0 25px 25px;">
+                <button class="btn btn-danger" style="flex: 1; padding: 15px;" onclick="deleteItem()">
+                    <i class="fas fa-trash"></i> بله، حذف شود
+                </button>
+                <button class="btn btn-secondary" style="flex: 1; padding: 15px; background: var(--secondary);" onclick="closeDeleteModal()">
+                    <i class="fas fa-times"></i> انصراف
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نوتیفیکیشن -->
+    <div class="notification" id="notification"></div>
+
+    <script src='script/app.js'></script>
+</body>
+</html>
